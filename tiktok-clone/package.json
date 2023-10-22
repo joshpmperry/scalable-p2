@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@types/debounce": "^1.2.3",
+    "@uploadthing/react": "^5.7.0",
     "appwrite": "^13.0.0",
     "debounce": "^1.2.1",
     "image-js": "^0.35.5",
@@ -20,6 +21,7 @@
     "react-advanced-cropper": "^0.19.3",
     "react-dom": "^18",
     "react-icons": "^4.11.0",
+    "uploadthing": "^5.7.2",
     "zustand": "^4.4.3"
   },
   "devDependencies": {

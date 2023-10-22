@@ -1,12 +1,13 @@
 "use client"
 
 import { useEffect } from "react";
-import { PostMainCompType } from "../types"
+import { PostMainCompTypes } from "../types"
 import Link from "next/link";
 import { AiFillHeart } from "react-icons/ai";
 import { ImMusic } from "react-icons/im";
+import PostMainLikes from "./PostMainLikes";
 
-export default function PostMain( {post} : PostMainCompType){
+export default function PostMain( {post} : PostMainCompTypes){
     useEffect(() => {
         const video = document.getElementById(`video-${post?.id}`) as HTMLVideoElement
         const postMainElement = document.getElementById(`PostMain-${post.id}`);
@@ -38,10 +39,9 @@ export default function PostMain( {post} : PostMainCompType){
                             </button>
                         </div>
                         <p className="text-[15px] pb-0.5 break-words md:max-w-[400px] max-w-[300px]">{post.text}</p>
-                        <p className="text-[15px] pb-0.5 flex items-center font-semibold">
-                            <ImMusic size="17"/>
-                            <span className="px-1">Original sound ~  not implemented</span>
-                            <AiFillHeart/>
+                        <p className="text-[12px] pb-0.5 flex items-center font-semibold">
+                            <ImMusic size="13"/>
+                            <span className="px-1">Original sound ~ not implemented</span>
                         </p>
 
                         <div className="mt-2.5 flex">
@@ -55,9 +55,11 @@ export default function PostMain( {post} : PostMainCompType){
                                     src={post?.video_url}
                                 />
                             </div>
+                            <PostMainLikes post={post}/>
                         </div>
                     </div>
                 </div>
+                
                 
         </>
     )
