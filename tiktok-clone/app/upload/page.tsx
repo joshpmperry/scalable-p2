@@ -6,8 +6,6 @@ import { UploadError } from "../types";
 import UploadLayout from "../layouts/UploadLayout";
 import { BiLoaderCircle } from "react-icons/bi";
 import { AiOutlineCheckCircle } from "react-icons/ai";
-import { PiKnifeLight } from 'react-icons/pi'
-import { classNames } from "uploadthing/client";
 
 export default function upload(){
     const router = useRouter();
@@ -158,23 +156,6 @@ export default function upload(){
                             </div>
                         }
                         <div className="mt-4 mb-6">
-                            <div className="flex bg-[#F8F8F8] py-4 px-6">
-                                <div>
-                                    <PiKnifeLight className="mr-4" size="20"/>
-                                </div>
-                                <div>
-                                    <div className="text-semibold text-[15px] mb-1.5">Divide videos and edit (Not Implemented)</div>
-                                    <div className="text-semibold text-[13px] text-gray-400">
-                                        You can quickly divide videos into multiple parts, remove redundant parts
-                                    </div>
-                                </div>
-                                <div className="flex justify-end max-w-[130px] w-full h-full text-center my-aut">
-                                    <button className="px-8 py-1.5 text-white text-[15px] bg-[#F02C56] rounded-sm hover:bg-white hover:text-[#0d1321] border-black">
-                                        Edit
-                                    </button>
-                                </div>
-                            </div>
-
                             <div className="mt-5">
                                 <div className="flex items-center justify-between">
                                     <div className="mb-1 text-[15px]">Caption</div>

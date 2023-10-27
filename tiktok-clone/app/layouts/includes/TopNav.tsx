@@ -3,17 +3,42 @@ import { usePathname, useRouter } from "next/navigation"
 import { BiLogOut, BiSearch, BiUser} from "react-icons/bi"
 import { AiOutlinePlus } from "react-icons/ai"
 import { BsThreeDotsVertical} from "react-icons/bs"
+import { useUser } from "@/app/context/user"
+import useSearchProfilesByName from "@/app/hooks/useSearchProfilesByName"
+import { useGeneralStore } from "@/app/stores/general"
+import { RandomUsers } from "@/app/types"
+import { useState, useEffect } from "react"
+import { debounce } from "react-advanced-cropper"
+import useCreateBucketUrl from "@/app/hooks/useCreateBucketUrl"
 
 export default function TopNav(){
+    const userContext = useUser()
     const router = useRouter()
     const pathname = usePathname()
 
-    const goTo = () => {
-        console.log("here");
-    }
+    const [searchProfiles, setSearchProfiles] = useState<RandomUsers[]>([])
+    let [showMenu, setShowMenu] = useState<boolean>(false)
+    let { setIsLoginOpen, setIsEditProfileOpen } = useGeneralStore()
 
-    const handleSearchName = (event: {target: {value: string}}) => {
-        console.log(event.target.value)
+    useEffect(() => { setIsEditProfileOpen(false) }, [])
+
+    const handleSearchName = debounce(async (event: { target: { value: string } }) => {
+        if (event.target.value == "") return setSearchProfiles([])
+
+        try {
+            const result = await useSearchProfilesByName(event.target.value)
+            if (result) return setSearchProfiles(result)
+            setSearchProfiles([])
+        } catch (error) {
+            console.log(error)
+            setSearchProfiles([])
+            alert(error)
+        }
+    }, 500)
+
+    const goTo = () => {
+        if (!userContext?.user) return setIsLoginOpen(true)
+        router.push('/upload')
     }
 
     return (
@@ -70,34 +95,52 @@ export default function TopNav(){
                             <span className="px-2 font-medium text-[15px]">Upload</span>
                         </button>
 
-                        {true ? (
+                        {!userContext?.user?.id ? (
                             <div className="flex item-center">
-                                <button className="flex items-center bg-[#ef233c] text-white hover:bg-gray-100 hover:text-black border-black rounded-md px-3 py-[6px]">
+                                <button 
+                                    onClick={() => setIsLoginOpen(true)}
+                                    className="flex items-center bg-[#ef233c] text-white hover:bg-gray-100 hover:text-black border-black rounded-md px-3 py-[6px]">
                                     <span className="whitespace-nowrap mx-4 font-medium text-[15px]">Log in</span>
                                 </button>
-                                <BsThreeDotsVertical color="#F0EBD8" size="25"/>
                             </div>
                         ) : 
                         (
                             <div className="flex items-center">
+
                                 <div className="relative">
-                                    <button className="mt-1 border border-gray-200 rounded-full" >
-                                        <img className="rounded-full w-[35px] h-[35px]" src="https://placehold.co/35"/>
+
+                                    <button 
+                                        onClick={() => setShowMenu(showMenu = !showMenu)} 
+                                        className="mt-1 border border-gray-200 rounded-full"
+                                    >
+                                        <img className="rounded-full w-[35px] h-[35px]" src={useCreateBucketUrl(userContext?.user?.image || '')} />
                                     </button>
-
-                                    <div className=" absolute bg-white rounded-lg py-1.5 w-[200px] shadow-xl border top-[40px] right-0">
-                                        <button className="flex items-center w-full justify-start py-3 px-2 hover:bg-indigo-50">
-                                            <BiUser size="20"/>
-                                            <span className="pl-2 font-semibold text-sm">Profile</span>
-                                        </button>
-                                        <button className="flex items-center w-full justify-start py-3 px-2 hover:bg-indigo-50">
-                                            <BiLogOut size="20"/>
-                                            <span className="pl-2 font-semibold text-sm">Log out</span>
-                                        </button>
-                                    </div>
                                     
+                                    {showMenu ? (
+                                        <div className="absolute bg-white rounded-lg py-1.5 w-[200px] shadow-xl border top-[40px] right-0">
+                                            <button 
+                                                onClick={() => { 
+                                                    router.push(`/profile/${userContext?.user?.id}`)
+                                                    setShowMenu(false)
+                                                }}
+                                                className="flex items-center w-full justify-start py-3 px-2 hover:bg-gray-100 cursor-pointer"
+                                            >
+                                                <BiUser size="20"/>
+                                                <span className="pl-2 font-semibold text-sm">Profile</span>
+                                            </button>
+                                            <button 
+                                                onClick={async () => {
+                                                    await userContext?.logout()
+                                                    setShowMenu(false)
+                                                }} 
+                                                className="flex items-center justify-start w-full py-3 px-1.5 hover:bg-gray-100 border-t cursor-pointer"
+                                            >
+                                                <BiLogOut size={20} />
+                                                <span className="pl-2 font-semibold text-sm">Log out</span>
+                                            </button>
+                                        </div>
+                                    ) : null}
                                 </div>
-
                             </div>
                         )}
                     </div>
