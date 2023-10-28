@@ -1,54 +1,25 @@
 import { useState } from "react"
-
+import SingleComment from "./SingleComment"
+import { useUser } from "@/app/context/user"
 import { BiLoaderCircle } from "react-icons/bi"
 import ClientOnly from "../ClientOnly"
-
+import { useCommentStore } from "@/app/stores/comment"
+import useCreateComment from '@/app/hooks/useCreateComment' 
+import { useGeneralStore } from "@/app/stores/general"
 import { CommentsCompTypes } from "@/app/types"
-import SingleComment from "./SingleComment"
 
 export default function Comments({ params }: CommentsCompTypes) {
 
+    let { commentsByPost, setCommentsByPost } = useCommentStore()
+    let { setIsLoginOpen } = useGeneralStore()
+
+    const contextUser = useUser()
     const [comment, setComment] = useState<string>('')
     const [inputFocused, setInputFocused] = useState<boolean>(false)
     const [isUploading, setIsUploading] = useState<boolean>(false)
 
-    const commentsByPost = [{
-        id: '123',
-        user_id: '2605',
-        post_id: '260',
-        text: 'Hello Nice train u got there',
-        created_at: 'date_here',
-        profile: {
-            user_id: '2605',
-            name: 'Fake',
-            image: 'http://placehold.co/100'
-        }}, {
-            id: '123',
-            user_id: '2605',
-            post_id: '260',
-            text: 'This is a comment',
-            created_at: 'date_here',
-            profile: {
-                user_id: '2605',
-                name: 'Fake',
-                image: 'http://placehold.co/100'
-            }
-        },
-        {
-            id: '123',
-            user_id: '2605',
-            post_id: '260',
-            text: 'This is a text test tess',
-            created_at: 'date_here',
-            profile: {
-                user_id: '2605',
-                name: 'Fake',
-                image: '/images/tiktok-logo-1.png'
-            }
-        }]
-    
     const addComment = async () => {
-        /*if (!contextUser?.user) return setIsLoginOpen(true)
+        if (!contextUser?.user) return setIsLoginOpen(true)
 
         try {
             setIsUploading(true)
@@ -59,7 +30,7 @@ export default function Comments({ params }: CommentsCompTypes) {
         } catch (error) {
             console.log(error)
             alert(error)
-        }*/
+        }
     }
 
     return (

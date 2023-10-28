@@ -3,9 +3,10 @@ import { AiOutlineClose } from "react-icons/ai";
 import Login from '@/app/Components/auth/Login'
 import Register from '@/app/Components/auth/Register'
 import { useState } from "react";
+import { useGeneralStore } from "../stores/general";
  
 export default function AuthOverlay() {
-
+    let { setIsLoginOpen } = useGeneralStore()
     let [isRegister, setIsRegister] = useState<boolean>(false)
 
     return (
@@ -17,7 +18,7 @@ export default function AuthOverlay() {
                 <div className="relative bg-white w-full max-w-[470px] h-[70%] p-4 rounded-lg">
 
                     <div className="w-full flex justify-end">
-                        <button onClick={() => true} className="p-1.5 rounded-full bg-gray-100">
+                        <button onClick={() => setIsLoginOpen(false)} className="p-1.5 rounded-full bg-gray-100">
                             <AiOutlineClose size="26"/>
                         </button>
                     </div>

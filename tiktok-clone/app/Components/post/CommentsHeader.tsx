@@ -13,31 +13,98 @@ import ClientOnly from "../ClientOnly"
 import { useRouter } from "next/navigation"
 
 import { CommentsHeaderCompTypes } from "@/app/types"
+import { useUser } from "@/app/context/user"
+import useCreateLike from "@/app/hooks/useCreateLike"
+import useDeleteLike from "@/app/hooks/useDeleteLike"
+import useDeletePostById from "@/app/hooks/useDeletePostById"
+import useIsLiked from "@/app/hooks/useIsLiked"
+import { useCommentStore } from "@/app/stores/comment"
+import { useGeneralStore } from "@/app/stores/general"
+import { useLikeStore } from "@/app/stores/like"
 
 export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes) {
 
+    let { setLikesByPost, likesByPost } = useLikeStore()
+    let { commentsByPost, setCommentsByPost } = useCommentStore()
+    let { setIsLoginOpen } = useGeneralStore()
+
+    const contextUser = useUser()
     const router = useRouter()
     const [hasClickedLike, setHasClickedLike] = useState<boolean>(false)
     const [isDeleteing, setIsDeleteing] = useState<boolean>(false)
     const [userLiked, setUserLiked] = useState<boolean>(false)
+
+    useEffect(() => { 
+        setCommentsByPost(params?.postId) 
+        setLikesByPost(params?.postId)
+    }, [post])
+    useEffect(() => { hasUserLikedPost() }, [likesByPost])
     
     const hasUserLikedPost = () => {
-        
+        if (likesByPost.length < 1 || !contextUser?.user?.id) {
+            setUserLiked(false)
+            return
+        }
+        let res = useIsLiked(contextUser.user.id, params.postId, likesByPost)
+        setUserLiked(res ? true : false)
     }
 
     const like = async () => {
-        
+        try {
+            setHasClickedLike(true)
+            await useCreateLike(contextUser?.user?.id || '', params.postId)
+            setLikesByPost(params.postId)
+            setHasClickedLike(false)
+        } catch (error) {
+            console.log(error)
+            alert(error)
+            setHasClickedLike(false)
+        }
     }
 
     const unlike = async (id: string) => {
-        
+        try {
+            setHasClickedLike(true)
+            await useDeleteLike(id)
+            setLikesByPost(params.postId)
+            setHasClickedLike(false)
+        } catch (error) {
+            console.log(error)
+            alert(error)
+            setHasClickedLike(false)
+        }
     }
 
     const likeOrUnlike = () => {
-        
+        if (!contextUser?.user) return setIsLoginOpen(true)
+
+        let res = useIsLiked(contextUser.user.id, params.postId, likesByPost)
+        if (!res) {
+            like()
+        } else {
+            likesByPost.forEach(like => {
+                if (contextUser?.user?.id && contextUser.user.id == like.user_id && like.post_id == params.postId) {
+                    unlike(like.id) 
+                }
+            })
+        }
     }
 
     const deletePost = async () => {
+        let res = confirm('Are you sure you want to delete this post?')
+        if (!res) return
+
+        setIsDeleteing(true)
+
+        try {
+            await useDeletePostById(params?.postId, post?.video_url)
+            router.push(`/profile/${params.userId}`)
+            setIsDeleteing(false)
+        } catch (error) {
+            console.log(error)
+            setIsDeleteing(false)
+            alert(error)
+        }
     }
     
     return (

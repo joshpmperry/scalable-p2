@@ -3,9 +3,15 @@ import { useState } from "react";
 import { ShowErrorObject } from "@/app/types";
 import { BiLoaderCircle } from "react-icons/bi";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/app/context/user";
+import { User } from '../../types';
+import { useGeneralStore } from "@/app/stores/general";
 
 export default function Register() {
     const router = useRouter()
+    const contextUser = useUser()
+
+    let { setIsLoginOpen } = useGeneralStore();
 
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState<string | ''>('');
@@ -50,7 +56,6 @@ export default function Register() {
     }
 
     const register = async () => {
-        /** 
          let isError = validate()
          if (isError) return
          if (!contextUser) return
@@ -66,7 +71,6 @@ export default function Register() {
                 setLoading(false)
                 alert(error)
             }
-            */
     }
 
     return (
