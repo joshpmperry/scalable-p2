@@ -1,7 +1,4 @@
 "use client"
-
-import { AiFillHeart } from "react-icons/ai"
-import { ImMusic } from "react-icons/im"
 import Link from "next/link"
 import { useEffect } from "react"
 import PostMainLikes from "./PostMainLikes"
