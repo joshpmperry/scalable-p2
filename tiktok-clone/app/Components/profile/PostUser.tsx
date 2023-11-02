@@ -1,6 +1,4 @@
 import { AiOutlineLoading3Quarters } from "react-icons/ai"
-import { SiSoundcharts } from "react-icons/si"
-import { BiErrorCircle } from "react-icons/bi"
 import { useEffect } from "react"
 import Link from "next/link"
 import useCreateBucketUrl from "@/app/hooks/useCreateBucketUrl"
