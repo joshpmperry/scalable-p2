@@ -5,22 +5,20 @@ import { AiFillHeart } from "react-icons/ai"
 import { BsChatDots, BsTrash3 } from "react-icons/bs"
 import { ImMusic } from "react-icons/im"
 import moment from "moment"
-
+import { useUser } from "@/app/context/user"
 import { useEffect, useState } from "react"
 import { BiLoaderCircle } from "react-icons/bi"
 import ClientOnly from "../ClientOnly"
-
+import useCreateBucketUrl from "@/app/hooks/useCreateBucketUrl"
+import { useLikeStore } from "@/app/stores/like"
+import { useCommentStore } from "@/app/stores/comment"
+import { useGeneralStore } from "@/app/stores/general"
 import { useRouter } from "next/navigation"
-
-import { CommentsHeaderCompTypes } from "@/app/types"
-import { useUser } from "@/app/context/user"
+import useIsLiked from "@/app/hooks/useIsLiked"
 import useCreateLike from "@/app/hooks/useCreateLike"
 import useDeleteLike from "@/app/hooks/useDeleteLike"
 import useDeletePostById from "@/app/hooks/useDeletePostById"
-import useIsLiked from "@/app/hooks/useIsLiked"
-import { useCommentStore } from "@/app/stores/comment"
-import { useGeneralStore } from "@/app/stores/general"
-import { useLikeStore } from "@/app/stores/like"
+import { CommentsHeaderCompTypes } from "@/app/types"
 
 export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes) {
 
@@ -106,14 +104,13 @@ export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes
             alert(error)
         }
     }
-    
     return (
         <>
-            <div className="flex items-center justify-between px-8">
+            <div className="flex items-center justify-between px-8 ">
                 <div className="flex items-center">
                     <Link href={`/profile/${post?.user_id}`}>
                         {post?.profile.image ? (
-                            <img className="rounded-full lg:mx-0 mx-auto" width="40" src={post?.profile.image} />
+                            <img className="rounded-full lg:mx-0 mx-auto" width="40" src={useCreateBucketUrl(post?.profile.image)} />
                         ) : (
                             <div className="w-[40px] h-[40px] bg-gray-200 rounded-full"></div>
                         )}
@@ -135,7 +132,7 @@ export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes
                     </div>
                 </div>
 
-                {true ? (
+                {contextUser?.user?.id == post?.user_id ? (
                     <div>
                         {isDeleteing ? (
                             <BiLoaderCircle className="animate-spin" size="25"/>
@@ -150,11 +147,6 @@ export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes
 
             <p className="px-8 mt-4 text-sm">{post?.text}</p>
 
-            <p className="flex item-center gap-2 px-8 mt-4 text-sm font-bold">
-                <ImMusic size="17"/>
-                original sound ~ not implemented 
-            </p>
-
             <div className="flex items-center px-8 mt-8">
                 <ClientOnly>
                     <div className="pb-4 text-center flex items-center">
@@ -164,20 +156,22 @@ export default function CommentsHeader({ post, params }: CommentsHeaderCompTypes
                             className="rounded-full bg-gray-200 p-2 cursor-pointer"
                         >
                             {!hasClickedLike ? (
-                                <AiFillHeart color={userLiked ? '#ff2626' : ''} size="25"/>
+                                <AiFillHeart color={likesByPost.length > 0 && userLiked ? '#ff2626' : ''} size="25"/>
                             ) : (
                                 <BiLoaderCircle className="animate-spin" size="25"/>
                             )}
                         </button>
-                        <span className="text-xs pl-2 text-gray-800 font-semibold">Like</span>
+                        <span className="text-xs pl-2 pr-4 text-gray-800 font-semibold">
+                            {likesByPost.length}
+                        </span>
                     </div>
                 </ClientOnly>
 
-                <div className="pb-4 text-center flex items-center pl-2">
+                <div className="pb-4 text-center flex items-center">
                     <div className="rounded-full bg-gray-200 p-2 cursor-pointer">
                         <BsChatDots size={25} />
                     </div>
-                    <span className="text-xs pl-2 text-gray-800 font-semibold">Comments</span>
+                    <span className="text-xs pl-2 text-gray-800 font-semibold">{commentsByPost?.length}</span>
                 </div>
             </div>
         </>

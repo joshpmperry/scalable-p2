@@ -1,26 +1,22 @@
-import type { Metadata } from 'next'
-import './globals.css'
 import UserProvider from './context/user'
-import AllOverlays from './Components/AllOverlays'
-
+import AllOverlays from "@/app/components/AllOverlays"
+import './globals.css'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Tiktok-Clone',
-  description: 'Tiktok-Clone',
+  title: 'TikTok Clone',
+  description: 'TikTok Clone',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className='bg-[#2a2929]'>
       <UserProvider>
-        <body >
-          <AllOverlays/>
+        <body>
+          <AllOverlays />
           {children}
         </body>
+
       </UserProvider>
     </html>
   )

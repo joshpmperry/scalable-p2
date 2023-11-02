@@ -1,12 +1,12 @@
-"use client"
 import { AiOutlineClose } from "react-icons/ai";
-import Login from '@/app/Components/auth/Login'
-import Register from '@/app/Components/auth/Register'
+import { useGeneralStore } from"@/app/stores/general"
+import Login from '@/app/components/auth/Login'
+import Register from '@/app/components/auth/Register'
 import { useState } from "react";
-import { useGeneralStore } from "../stores/general";
  
 export default function AuthOverlay() {
     let { setIsLoginOpen } = useGeneralStore()
+
     let [isRegister, setIsRegister] = useState<boolean>(false)
 
     return (

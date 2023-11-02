@@ -1,21 +1,28 @@
 "use client"
 
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { UploadError } from "../types";
+import React, { useEffect, useState } from "react";
 import UploadLayout from "../layouts/UploadLayout";
-import { BiLoaderCircle } from "react-icons/bi";
+import { BiLoaderCircle, BiSolidCloudUpload } from "react-icons/bi"
 import { AiOutlineCheckCircle } from "react-icons/ai";
+import { PiKnifeLight } from 'react-icons/pi'
+import { useRouter } from "next/navigation";
+import { useUser } from "@/app/context/user"
+import { UploadError } from "../types";
+import useCreatePost from "../hooks/useCreatePost";
 
-export default function upload(){
-    const router = useRouter();
-    
+export default function Upload() {
+    const contextUser = useUser()
+    const router = useRouter()
+
     let [fileDisplay, setFileDisplay] = useState<string>('');
     let [caption, setCaption] = useState<string>('');
     let [file, setFile] = useState<File | null>(null);
     let [error, setError] = useState<UploadError | null>(null);
     let [isUploading, setIsUploading] = useState<boolean>(false);
 
+    useEffect(() => {
+        if (!contextUser?.user) router.push('/')
+    }, [contextUser])
 
     const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
@@ -53,16 +60,35 @@ export default function upload(){
         return isError
     }
 
+    const createNewPost = async () => {
+        let isError = validate()
+        if (isError) return
+        if (!file || !contextUser?.user) return
+        setIsUploading(true)
+
+        try {
+            await useCreatePost(file, contextUser?.user?.id, caption)
+            router.push(`/profile/${contextUser?.user?.id}`)
+            setIsUploading(false)
+        } catch (error) {
+            console.log(error)
+            setIsUploading(false)
+            alert(error)
+        }
+    }
 
     return (
         <>
             <UploadLayout>
-                <div className="w-full mt-[80px] mb-[40px] bg-white shadow-lg rounded-md py-6 md:px-10 px-4">
-                    <div >
-                        <h1 className="text-[23px] font-semibold">Upload video</h1>
+                <div className="w-full mt-[80px] mb-[40px] bg-[#545151] border-[#CF7B13] shadow-lg rounded-md py-6 md:px-10 px-4">
+                    <div>
+                        <h1 className="text-[23px] font-semibold text-white">Upload video</h1>
                         <h2 className="text-gray-400 mt-1">Post a video to your account</h2>
                     </div>
-                    {!fileDisplay ? 
+
+                    <div className="mt-8 md:flex gap-6">
+
+                        {!fileDisplay ? 
                             <label 
                                 htmlFor="fileInput"
                                 className="
@@ -83,18 +109,19 @@ export default function upload(){
                                     border-dashed 
                                     border-gray-300 
                                     rounded-lg 
-                                    hover:bg-gray-200 
+                                    hover:bg-gray-100
                                     cursor-pointer
                                 "
                             >
-                                <p className="mt-4 text-[17px]">Select video to upload</p>
+                                <BiSolidCloudUpload size="40" color="#b3b3b1"/>
+                                <p className="mt-4 text-[17px] text-[#CF7B13]">Select video to upload</p>
                                 <p className="mt-1.5 text-gray-500 text-[13px]">Or drag and drop a file</p>
                                 <p className="mt-12 text-gray-400 text-sm">MP4</p>
-                                <p className="mt-2 text-gray-400 text-[13px]">Up to 60 seconds</p>
-                                <p className="mt-2 text-gray-400 text-[13px]">Less than 64 MB</p>
+                                <p className="mt-2 text-gray-400 text-[13px]">Up to 60 Seconds</p>
+                                <p className="mt-2 text-gray-400 text-[13px]">Less than 2 GB</p>
                                 <label 
                                     htmlFor="fileInput" 
-                                    className="px-2 py-1.5 mt-8 text-white text-[15px] w-[80%] bg-[#F02C56] rounded-sm cursor-pointer"
+                                    className="px-2 py-1.5 mt-8 text-white text-[15px] w-[80%] bg-[#CF7B13] rounded-sm cursor-pointer"
                                 >
                                     Select file
                                 </label>
@@ -104,9 +131,8 @@ export default function upload(){
                                     onChange={onChange}
                                     hidden 
                                     accept=".mp4" 
-                                />                         
+                                />
                             </label>
-                            
                         :
                             <div
                                 className="
@@ -149,16 +175,18 @@ export default function upload(){
                                         <AiOutlineCheckCircle size="16" className="min-w-[16px]"/>
                                         <p className="text-[11px] pl-1 truncate text-ellipsis">{File.name}</p>
                                     </div>
-                                    <button onClick={() => clearVideo()} className="text-[11px] ml-2 font-semibold">
+                                    <button onClick={() => clearVideo()} className="text-[11px] ml-2 font-semibold text-white">
                                         Change
                                     </button>
                                 </div>
                             </div>
                         }
+
+
                         <div className="mt-4 mb-6">
                             <div className="mt-5">
                                 <div className="flex items-center justify-between">
-                                    <div className="mb-1 text-[15px]">Caption</div>
+                                    <div className="mb-1 text-[15px] text-[#CF7B13]">Caption</div>
                                     <div className="text-gray-400 text-[12px]">{caption.length}/150</div>
                                 </div>
                                 <input 
@@ -186,9 +214,10 @@ export default function upload(){
                                 </button>
                                 <button 
                                     disabled={isUploading}
-                                    className="px-10 py-2.5 mt-8 border text-[16px] text-white bg-[#F02C56] rounded-sm hover:bg-white hover:text-[#0d1321] hover:border-black"
+                                    onClick={() => createNewPost()}
+                                    className="px-10 py-2.5 mt-8 border text-[16px] text-white bg-[#CF7B13] rounded-sm"
                                 >
-                                    {isUploading ? <BiLoaderCircle className="animate-spin " color="#ffffff" size={25} /> : 'Post'}
+                                    {isUploading ? <BiLoaderCircle className="animate-spin" color="#ffffff" size={25} /> : 'Post'}
                                 </button>
                             </div>
 
@@ -199,6 +228,8 @@ export default function upload(){
                             ) : null}
 
                         </div>
+
+                    </div>
                 </div>
             </UploadLayout>
         </>

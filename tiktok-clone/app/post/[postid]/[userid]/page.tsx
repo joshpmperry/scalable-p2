@@ -1,50 +1,49 @@
 "use client"
 
+import Comments from "@/app/components/post/Comments"
+import CommentsHeader from "@/app/components/post/CommentsHeader"
 import Link from "next/link"
 import { useEffect } from "react"
 import { AiOutlineClose } from "react-icons/ai"
 import { BiChevronDown, BiChevronUp } from "react-icons/bi"
 import { useRouter } from "next/navigation"
-
+import ClientOnly from "@/app/components/ClientOnly"
 import { Post, PostPageTypes } from "@/app/types"
-import ClientOnly from "@/app/Components/ClientOnly"
-import CommentsHeader from "@/app/Components/post/CommentsHeader"
-import Comments from "@/app/Components/post/Comments"
-
+import { usePostStore } from "@/app/stores/post"
+import { useLikeStore } from "@/app/stores/like"
+import { useCommentStore } from "@/app/stores/comment"
+import useCreateBucketUrl from "@/app/hooks/useCreateBucketUrl"
 
 export default function Post({ params }: PostPageTypes) {
 
+    let { postById, postsByUser, setPostById, setPostsByUser } = usePostStore()
+    let { setLikesByPost } = useLikeStore()
+    let { setCommentsByPost } = useCommentStore()
+
     const router = useRouter()
 
-    const postById = {
-        id: '123',
-        user_id: '2605',
-        video_url: '/train.mp4',
-        text: 'This is a text placeholder',
-        created_at: 'date_here',
-        profile: {
-            user_id: '2605',
-            name: 'Fake',
-            image: 'http://placehold.co/100'
-        }
-    }
-  
+    useEffect(() => { 
+        setPostById(params.postId)
+        setCommentsByPost(params.postId) 
+        setLikesByPost(params.postId)
+        setPostsByUser(params.userId) 
+    }, [])
+
     const loopThroughPostsUp = () => {
-        /*postsByUser.forEach(post => {
+        postsByUser.forEach(post => {
             if (post.id > params.postId) {
                 router.push(`/post/${post.id}/${params.userId}`)
             }
-        }); */
+        });
     }
 
     const loopThroughPostsDown = () => {
-        /*postsByUser.forEach(post => {
+        postsByUser.forEach(post => {
             if (post.id < params.postId) {
                 router.push(`/post/${post.id}/${params.userId}`)
             }
-        }); */
+        });
     }
-
 
     return (
         <>
@@ -55,7 +54,7 @@ export default function Post({ params }: PostPageTypes) {
                 <div className="lg:w-[calc(100%-540px)] h-full relative">
                     <Link
                         href={`/profile/${params?.userId}`}
-                        className="absolute text-white z-20 m-5 rounded-full bg-gray-700 p-1.5 hover:bg-gray-800"
+                        className="absolute text-[#f0f0f0] z-20 m-5 rounded-full bg-gray-700 p-1.5 hover:bg-gray-800"
                     >
                         <AiOutlineClose size="27"/>
                     </Link>
@@ -86,7 +85,7 @@ export default function Post({ params }: PostPageTypes) {
                         {postById?.video_url ? (
                             <video 
                                 className="fixed object-cover w-full my-auto z-[0] h-screen" 
-                                src={postById?.video_url}
+                                src={useCreateBucketUrl(postById?.video_url)}
                             />
                         ) : null}
 
@@ -98,7 +97,7 @@ export default function Post({ params }: PostPageTypes) {
                                     loop
                                     muted
                                     className="h-screen mx-auto" 
-                                    src={postById.video_url}
+                                    src={useCreateBucketUrl(postById.video_url)}
                                 />
                             ) : null}
                         </div>
@@ -114,7 +113,7 @@ export default function Post({ params }: PostPageTypes) {
                                 <CommentsHeader post={postById} params={params}/>
                             ) : null}
                         </ClientOnly>
-                        <Comments params={params}/>*
+                        <Comments params={params}/>
 
                 </div>
             </div>
