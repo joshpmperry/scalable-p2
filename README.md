@@ -117,3 +117,6 @@ The rest were just written _TypeScript_ code by me which can be found in **hooks
 - Second, go to Appwrite and make sure the project has set the hostname to the given tiktok-clone websites hostname, such as mine would be set as _tiktok-clone-josh.vercel.app_ 
 - Third, check on vercel to make sure the database is up and running, then check on Appwrite if anyfiles uploaded are there.  
 - Optionally, use my repository, drag the .env file in to the project folder then on vercel set the root to the tiktok clone folder then let vercel build the website 
+
+
+## If you just want to write the project locally, this repository can be used as a localhost runable project, as the files in here also have the functions to convert, chunk and etc... although it will be a little bit more slower and may crash the database at some point. :D
