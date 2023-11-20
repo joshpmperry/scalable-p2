@@ -109,9 +109,31 @@ These were written and ran by seperate pods in their own repositories, some of t
 The rest were just written _TypeScript_ code by me which can be found in **hooks** file within the project
 
 
+### Upstash
+> Redis for caching and acts as a database for the chat application
+
+- Login, then create a project, copy the rest_url and rest_token in to .env
+
+UPSTASH_REDIS_REST_URL= 
+UPSTASH_REDIS_REST_TOKEN=
+
+### Google Auth
+
+> Using google Oauth for autherisation for tiktok app for easier use, (This isnt really needed, you can delete it out the code, but its for security when I hosted it)
+
+### Pusher App
+
+> A dumbed down firebase messaging application
+
+- Login, create project and copy the following env
+
+PUSHER_APP_ID=
+NEXT_PUBLIC_PUSHER_APP_KEY=
+PUSHER_APP_SECRET=
+
 ### Application Hosting : Vercel
 
-> Using Vercel to host the video
+> Using Vercel to host the applications, host both at different projects and re:route the tiktok main app to chat app
 
 - First, make a repository of the project with only the tiktok clone folder [https://github.com/joshpmperry/tiktok-clone], in a .env file add all the environment variables that the project needs to connect to the database and s3, in the project folder there should be a .env file, if you wish to use my environment variables. 
 - Second, go to Appwrite and make sure the project has set the hostname to the given tiktok-clone websites hostname, such as mine would be set as _tiktok-clone-josh.vercel.app_ 
